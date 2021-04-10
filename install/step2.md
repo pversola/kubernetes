@@ -17,9 +17,8 @@ $ curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-ke
 $ cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
-
-
 ```
+To install a latest version
 ```
 $ sudo apt update
 
@@ -27,6 +26,11 @@ $ sudo apt install -y kubelet kubeadm kubectl
 
 $ sudo apt-mark hold kubelet kubeadm kubectl
 ```
+
 To install a specific version, list the available versions in the repo, then select and install:
 ```
+$ apt-cache madison kubelet
+$ export KUBEVERSION=<VERSION>
+$ sudo apt install -y kubelet=$KUBEVERSION kubeadm=$KUBEVERSION kubectl=$KUBEVERSION
+$ sudo apt-mark hold kubelet kubeadm kubectl
 ```

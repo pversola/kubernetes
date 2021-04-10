@@ -1,91 +1,13 @@
-Step 7: HA master node
-
-Install Keepalived
-
-```
-sudo apt -y install keepalived
-```
-
-Config Keepalived on Primary Node
-
-```
-$ cat <<EOF | sudo tee /etc/keepalived/keepalived.conf
-vrrp_script haproxy-check {
-    script "killall -0 haproxy"
-    interval 2
-}
-
-vrrp_instance VI_1 {
-    interface eth0
-    state MASTER
-    priority 200
-
-    virtual_router_id 33
-    advert_int 1
-
-    unicast_src_ip <Primary IP Address>
-    unicast_peer {
-        <Secondary IP Address>
-    }
-
-    virtual_ipaddress {
-        <Virtual IP Address>
-    }
-
-    authentication {
-        auth_type PASS
-        auth_pass 1234
-    }
-}
-EOF
-```
-
-Config Keepalived on Secondary Node
-
-```
-$ cat <<EOF | sudo tee /etc/keepalived/keepalived.conf
-vrrp_instance VI_1 {
-    interface eth0
-    state BACKUP
-    priority 100
-
-    virtual_router_id 33
-    advert_int 1
-
-    unicast_src_ip <Secondary IP Address>
-    unicast_peer {
-        <Primary IP Address>
-    }
-
-    virtual_ipaddress {
-        <Virtual IP Address>
-    }
-
-    authentication {
-        auth_type PASS
-        auth_pass 1234
-    }
-}
-EOF
-```
-
-Start KeepAlived Service
-
-```
-$ sudo service keepalived start
-```
-
-Check Virtual IPs
-
-```
-$ sudo ip addr show eth0
-
-```
+## Step 7: Add master node
 
 Add master node
 
 ```
 ### COMMAND ###
+
+$ sudo kubeadm join <ENDPOINT IP>:<PORT> --token <TOKEN> \
+    --discovery-token-ca-cert-hash sha256:<DISCOVERY TOKEN> \
+    --control-plane --certificate-key <CERTIFICATE KEY>
 ```
 
 disabled scheduling from the cluster
@@ -100,4 +22,40 @@ Setup environment for master node
 $ mkdir -p $HOME/.kube
 $ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+
+#### How to manual join node **(Token Expire)**
+
+Step 1: Get Token
+
+```
+$ sudo kubeadm token list
+$ sudo kubeadm token create --print-join-command
+```
+
+Step 2: Get Discovery Token CA cert Hash
+
+```
+$ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+```
+
+Step 3: Get API Server Advertise address
+
+```
+$ kubectl cluster-info
+Kubernetes control plane is running at https://<HOST>:<PORT>
+KubeDNS is running at https://<HOST>:<PORT>/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+```
+
+Step 4: Get Certificate Key
+
+```
+$ kubeadm certs certificate-key
+```
+
+Setp 5: Join a new Kubernetes Worker Node a Cluster
+
+```
+$ kubeadm join <control-plane-host>:<control-plane-port> --token <token> --discovery-token-ca-cert-hash sha256:<hash> --control-plane --certificate-key <CERTIFICATE KEY>
 ```

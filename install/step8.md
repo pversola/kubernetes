@@ -1,7 +1,7 @@
 ## Step 8: Add worker nodes
 
 ```
-$ kubeadm join <ENDPOINT IP>:<PORT> --token <TOKEN> --discovery-token-ca-cert-hash sha256:<DISCOVERY TOKEN>
+$ sudo kubeadm join <ENDPOINT IP>:<PORT> --token <TOKEN> --discovery-token-ca-cert-hash sha256:<DISCOVERY TOKEN>
 ```
 
 Configure label
@@ -11,7 +11,7 @@ kubectl label node <WORKER NODE> kubernetes.io/role=worker1
 kubectl label node <WORKER NODE> kubernetes.io/role=worker2
 ```
 
-## How to manual join node **(Token Expire)**
+#### How to manual join node **(Token Expire)**
 
 Step 1: Get Token
 

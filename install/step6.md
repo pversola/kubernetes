@@ -1,4 +1,4 @@
-Step 6: Install network plugin (CNI) configuration on Master
+## Step 6: Install network plugin (CNI) configuration on Master
 
 ```
 $ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml

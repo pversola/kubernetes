@@ -28,3 +28,27 @@ $ echo "" ; kubectl get secret -n kubernetes-dashboard $(kubectl get serviceacco
 
 ```
 
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: conn-gw
+  name: conn-gw
+  namespace: ebts
+spec:
+  clusterIP: 10.233.11.102
+  ports:
+    - name: http
+      nodePort: 32103
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: conn-gw
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+```
